@@ -130,7 +130,7 @@ It dose not monitor
     Prometheus dose not send alert, it just triger the alert. To send email or SMS we need additional entity which can handle the Email, SMS and all that
     Prometheus push the alert to an alertmanager and alertmanager send that alert via email, sms
 
-![alt text](https://github.com/MunawarRaza/prometheus/assests/master/image.png?raw=true)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/image.png)
 
 ### Pull base vs Push Base Model ###
 
