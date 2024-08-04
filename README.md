@@ -146,7 +146,7 @@ It dose not monitor
 
 Following is the architectural diagram
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/image.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/architecture_diagram.png)
 
 ### Pull base vs Push Base Model ###
 
