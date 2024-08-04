@@ -1,5 +1,19 @@
 # Table of Content #
 1. [What is observability](#what-is-observability)
+2. [What are Pillers of observability](#What-are-Pillers-of-observability)
+    - [logging](#logging)
+    - [Traces](#traces)
+    - [Metrics](#metrics)
+3. [What is prometheus](#what-is-prometheus)
+    - [What prometheus can do?](#what-prometheus-can-do?)
+    - [What kind of metrics prometheus can monitor?](#What-kind-of-metrics-prometheus-can-monitor)
+    - [What prometheus does not monitor?](#what-prometheus-does-not-monitor?)
+    - [Architecture of prometheus](#architecture-of-prometheus)
+    - [Pull base vs push base model](#pull-base-vs-push-base-model)
+    - [How to install prometheus](#how-to-install-prometheus)
+4. [What are exporetes?](#what-are-exporters)
+5. [What is node exporter](#what-is-node-exporter)
+    - [How to install Node exporter](#how-to-install-node-exporeter)
 
 ## What is observability ##
 
@@ -129,6 +143,8 @@ It dose not monitor
 
     Prometheus dose not send alert, it just triger the alert. To send email or SMS we need additional entity which can handle the Email, SMS and all that
     Prometheus push the alert to an alertmanager and alertmanager send that alert via email, sms
+
+Following is the architectural diagram
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/image.png)
 
