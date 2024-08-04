@@ -111,7 +111,7 @@ It dose not monitor
 
 2. Exporters
 
-    These are miniprocessors which collect the data from the current server and server to the prometheus server. Different exporter are
+    These are miniprocessors which collect the data from the current server and serve to the prometheus server. Different exporter are
     - Node exporeter
     - Apache
     - MySQL
@@ -129,6 +129,8 @@ It dose not monitor
 
     Prometheus dose not send alert, it just triger the alert. To send email or SMS we need additional entity which can handle the Email, SMS and all that
     Prometheus push the alert to an alertmanager and alertmanager send that alert via email, sms
+
+![alt text](https://github.com/MunawarRaza/prometheus/assests/image.png)
 
 ### Pull base vs Push Base Model ###
 
@@ -149,7 +151,7 @@ In push base model, agent on target machines blindly sends the data to preconfig
 
 In Push Base, we don't know our main components where agent sends the data is live or not
 
-## How to Install Prometheus ##
+### How to Install Prometheus ###
 
 ```
 # Create User and block its login to the console
@@ -229,8 +231,17 @@ systemctl daemon-reload
 # start the prometheus with systemd service
 systemctl start prometheus
 ```
+## What are exporters ? ##
 
-## How to Install Node exporeter ##
+These are miniprocessors which collect the data from the current server and serve to the prometheus server.
+There are multiple exporter
+Different exporter are
+- Node exporeter
+- Apache
+- MySQL
+- Windows
+
+### How to Install Node exporeter ###
 
 ```
 # Go to browser https://prometheus.io/download/
