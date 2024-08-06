@@ -337,15 +337,15 @@ Type node_disk_discard_time_seconds_total counter
 There are four main types of metric
 
 - Counter
-- Histogram
 - Gauge
+- Histogram
 - Summary
 
 #### Counter Metric ####
 
 - How many time did X happen
 
-    e.g What are the total number of requests fromt the starting. This number is only increase not decrease.
+    e.g What are the total number of requests. This number is only increase not decrease.
 - Number only can increase
 
 e.g total number of requests, total number of exception etc
@@ -399,7 +399,7 @@ Following is the example
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/summary_metrics_example.png)
 
 ### What is timeseries ###
-When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
 
@@ -447,7 +447,7 @@ When we "hit node_cpu_seconds_total" We receives the data against all CPUs and t
 
 ##### Range Vector #####
 
-When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data scrapped in last three minutes. It could be scrapped 1 time, 10 times etc.
+When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data scrapped data against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
 e.g
 
 Following query means, get the total cpu seconds in last three minutes.
@@ -480,13 +480,14 @@ We can get the data in past in multple ways
     e.g
 
     node_memory_Active_bytes{instance="server1"} offset 5h
+
     node_memory_Active_bytes{instance="server1"} offset 1h30m
 
 2. To go back to a specific point in time use the @ modifire
 
     node_memory_Active_bytes{instance="server1"} @1663265188
 
-    Note: here @1663265188 is the unix timestamp. We want to go to at specific time 
+    Note: here @1663265188 is the unix timestamp. We want to get the data at this unix timestamp
 
 3. Combine "offset" modifire and "@" modifire
     
@@ -500,6 +501,7 @@ We can get the data in past in multple ways
     In following example both queries are equal
 
     node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
+
     node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
 
 4. offset and @ modifires both can can be used with range vector
