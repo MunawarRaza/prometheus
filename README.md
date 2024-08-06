@@ -316,3 +316,196 @@ sudo systemctl start node_exporter
 # Check if the node exporter is working
 curl http://localhost:9100/metrics
 ```
+
+
+## Metrics ##
+
+### Attributes in metrics ###
+Every metrics have TYPE and HELP attribute
+
+Help Attribute: It is the description what the metric is
+
+Type Attribute: Specify what type of metric ( Counter, Gauge, Histogram, Summary)
+
+e.g
+
+Help node_disk_discard_time_seconds_total: This is the total number of seconds spent by the all discards
+Type node_disk_discard_time_seconds_total counter
+
+### Different Metics Types ###
+
+There are four main types of metric
+
+- Counter
+- Histogram
+- Gauge
+- Summary
+
+#### Counter Metric ####
+
+- How many time did X happen
+
+    e.g What are the total number of requests fromt the starting. This number is only increase not decrease.
+- Number only can increase
+
+e.g total number of requests, total number of exception etc
+
+#### Gauge Metric ####
+
+- What is the current value of X. 
+
+    e.g What is the current value of CPU Utilization. This can be increase or decrease at any time
+- Number can go up or down
+
+e.g Current CPU Utilization, Available System Memory, Number of concurrent Reuqests
+
+#### Histogram Metric ####
+
+- How Long or how big something is
+- Groups observations into configureable bucket sizes.
+
+e.g you want to know the states of anything in different time zone.
+
+You want to know
+- How many total number of requests in <0.5s
+- How many total number of requests in <1s
+- How many total number of requests in <5s
+
+so here <0.5s, <1s, <5s are the buckets.
+
+Another example of size
+
+- How many reuqest of size <800Mb
+- How many reuqest of size <1000Mb
+- How many reuqest of size <1500Mb
+
+Following is the diagram for this 
+
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/histogram_metrics_example.png)
+
+#### Summary Metric ####
+
+- Similar to historgram (track how long or how big something is)
+- How many observations fell below X
+- It gives value in percent
+
+e.g
+- 20% of all requests took less then .3s
+- 50% of all requests took less than 0.8s
+- 80% of all requests took less than 1s
+
+Following is the example
+
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/summary_metrics_example.png)
+
+### What is timeseries ###
+When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
+
+## What is Promtol ##
+
+Promtol is utility tool shipped with prometheus that can be used for:
+- Check and validate configuration
+    - Validate prometheus.yml
+    - Validate Rules files
+- Validate metric passed to it are correctly formatted
+
+command: promtool check config /etc/prometheus/prometheus.yml
+
+## What is promql ##
+Its prometheus query language. Main way to query the metrics whitin prometheus from grafana or prometheus dashboard
+
+### Outline for promql ###
+- Data types
+- Expressing data structure
+- Selectors and modifiers
+- Operations and Functions
+- Vector Matching
+- Aggregation
+- Subqueries
+- Histogram / Summary
+
+#### Data Types ####
+- String --> A simple string value (not in used)
+
+    e.g "This is string"
+- Scalar --> A simple numeric floting point value
+
+    e.g 54.743 or 13.5
+- Instant Vector --> Set of time series containing a single sample for each time series, all sharing the same timestamp
+
+    e.g 
+- Range Vector --> Set of time series containing a range of data points over time for each time serie
+
+##### Instant Vector #####
+If we got the value against each time series at same timestamp.
+
+When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
+
+##### Range Vector #####
+
+When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data scrapped in last three minutes. It could be scrapped 1 time, 10 times etc.
+e.g
+
+Following query means, get the total cpu seconds in last three minutes.
+node_cpu_seconds_total[3m]
+
+let's spouse Above query will return following data as shown in picture. We got tow metrics with unique labels therefor there are two timeseries. Since it is giving us different time for each value of each timeseries, this is called Range vector
+
+
+![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/range_vector_data_type_example.png)
+
+### Label Matcher ###
+- = (equal)
+
+    node_cpu_seconds_total{cpu="0",mode!="user"}[3m]
+- != (not equal)
+
+    node_cpu_seconds_total{cpu="0",mode!="user"}[3m]
+- =~ (regex)
+
+    node_filesystem_avail_bytes{cpu="0",device=~"/dev/sda.*"}
+- !~ (negative regex)
+
+    node_filesystem_avail_bytes{cpu="0",device!~"/dev/sda.*"}
+
+### Modifire ###
+We can get the data in past in multple ways
+
+1. If we want to get the value of past in time. e.g get the cpu utilization 5hours ago, or 10days ago we use offset modifire before the time
+
+    e.g
+
+    node_memory_Active_bytes{instance="server1"} offset 5h
+    node_memory_Active_bytes{instance="server1"} offset 1h30m
+
+2. To go back to a specific point in time use the @ modifire
+
+    node_memory_Active_bytes{instance="server1"} @1663265188
+
+    Note: here @1663265188 is the unix timestamp. We want to go to at specific time 
+
+3. Combine "offset" modifire and "@" modifire
+    
+    e.g
+    node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
+
+    Note1: Above means first go to timestamp provide in unix form then go 5 minutes back before that time
+    
+    Note2: order dose not matter for offset and @ modifires. We can write in either ways.
+
+    In following example both queries are equal
+
+    node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
+    node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
+
+4. offset and @ modifires both can can be used with range vector
+
+    Let's suppose we want to go at a specific time with unix timetamp then we go 10 minutes back. From there we want to get the values of different time range for 2 minutes. Like we can say get 2 minutes data range of 10 minutes before September 15, 2024 10:00:4 PM GMT
+
+    e.g
+
+    node_memory_Active_bytes{instance="server1"}[2m] @1663265188 offset 10m
