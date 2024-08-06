@@ -479,35 +479,31 @@ We can get the data in past in multple ways
 
     e.g
 
-    node_memory_Active_bytes{instance="server1"} offset 5h
-
-    node_memory_Active_bytes{instance="server1"} offset 1h30m
+    - node_memory_Active_bytes{instance="server1"} offset 5h
+    - node_memory_Active_bytes{instance="server1"} offset 1h30m
 
 2. To go back to a specific point in time use the @ modifire
 
-    node_memory_Active_bytes{instance="server1"} @1663265188
+    - node_memory_Active_bytes{instance="server1"} @1663265188
 
-    Note: here @1663265188 is the unix timestamp. We want to get the data at this unix timestamp
+        Note: here @1663265188 is the unix timestamp. We want to get the data at this unix timestamp
 
 3. Combine "offset" modifire and "@" modifire
     
-    e.g
-    node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
+    - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
 
-    Note1: Above means first go to timestamp provide in unix form then go 5 minutes back before that time
+        Note1: Above means first go to timestamp provide in unix form then go 5 minutes back before that time
     
-    Note2: order dose not matter for offset and @ modifires. We can write in either ways.
+        Note2: order dose not matter for offset and @ modifires. We can write in either ways.
 
     In following example both queries are equal
 
-    node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
-
-    node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
+    - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
+    - node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
 
 4. offset and @ modifires both can can be used with range vector
 
     Let's suppose we want to go at a specific time with unix timetamp then we go 10 minutes back. From there we want to get the values of different time range for 2 minutes. Like we can say get 2 minutes data range of 10 minutes before September 15, 2024 10:00:4 PM GMT
 
-    e.g
 
-    node_memory_Active_bytes{instance="server1"}[2m] @1663265188 offset 10m
+    - node_memory_Active_bytes{instance="server1"}[2m] @1663265188 offset 10m
