@@ -445,9 +445,13 @@ When we "hit node_cpu_seconds_total" We receives the data against all CPUs and t
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
 
+In URDU:
+
+Hm query kerty hain k current cpu utilization ki value btao to ye ak value return ker dy ga. Hum keh sakty hain k hmen subha 10:50 minute jo cpu utilization thi wo btao to hm query man unix timestamp pass ker den gy. Hum kehty hain k 10:50 minute sy 10 minute pehly ki cpu utilization kia thi to is case man exact unix timestamp bhi pass ker sakty hain ya phr 10:50 minute ka Unix timestamp pass kren and offset 10m use ker len. Ye sari values jo return hon gi wo single value ho gi her query and timeseries ky against. Is liye ye instant vector ha
+
 ##### Range Vector #####
 
-When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data scrapped data against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
+When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data which was scrapped  against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
 e.g
 
 Following query means, get the total cpu seconds in last three minutes.
@@ -457,6 +461,10 @@ let's spouse Above query will return following data as shown in picture. We got 
 
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/range_vector_data_type_example.png)
+
+In URDU:
+Hum range define kerty hain k last 5 minutes ka data hmen provide kren. Is case man prometheus ny 5 minute man ho sakta ha 5 dafa data collect kia hoa kisi bhi timeserise k liye. Is liye jb hmen data return ho ga to timeseries same ho gi but timestamp different ho ga r values bhi different ho sakti hain. 
+e.g hm kehty hain k subha 10:40 sy 10:50 ky dermian cpu utilization kia thi. to hm 10:50 ki unix timestamp pass kren gy sath man [10m] range define kren gy. Phr her timeserise ky against hmen multiple values milen gi jinka timestamp differnt ho ga. Uper di gai picture man dkha ja sakta ha.
 
 ### Label Matcher ###
 - = (equal)
@@ -507,3 +515,64 @@ We can get the data in past in multple ways
 
 
     - node_memory_Active_bytes{instance="server1"}[2m] @1663265188 offset 10m
+
+    node_cpu_seconds_total{cpu="0",mode="user"}[2m] @1722970584.93 offset 2m
+    go to 1722970584.93 then go back 2 minutes and then give me the range of last 2 minutes
+
+    let's break it
+
+    If we convert @1722970584.93 into humen readable time it gives us `Tue Aug  6 11:56:24 PM PKT 2024`. Now due to `offset` modifire it will go to `Aug  6 11:54:24 PM PKT 2024` and due to range --> `[2m]` will return last 3 results before `11:54:24 PM` which are value at `11:54:24 PM, 11:53:24 PM, 11:52:24 P`. There is a difference of 1 minute in each timestamp becacuse i have configured prometheus to collect the data after 1 minute whcih is "scrape_interval: 60s"
+
+
+### Operators ###
+
+```
+Arithmetic operators
++
+- 
+*
+/
+%
+^
+node_filesystem_avail_bytes / 1024
+----------------------------------
+Comparison Operators
+==
+!==
+>
+<
+<=
+>=
+
+e.g
+node_network_receive_bytes_total >=200
+
+----------------------------------
+bool operators are used to return true(1) or false(0)
+e.g
+node_filesystem_avail_bytes > bool 2000000000
+bool operators are mostly used to generate alerts
+```
+
+#### Binary operators ####
+When an promql expression has multiple binary operators they follow an order of precedence, from highest to lowest
+
+```
+1. ^
+2. *, /, %, atan2
+3. +, -
+4. ==, !=, <=, >=, >
+5. and, unless
+6 or
+
+Note: Operators on the same precedence level are left-associative. 
+For Example, 2 * 3 % 2 is equilent to (2 * 3) % 2.
+However ^ is right associateve, so 2 ^ 3 ^2 is equilent to 2^(3^2)
+```
+
+#### Logical Operators ####
+```
+AND
+OR
+UNLESS
+```
