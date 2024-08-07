@@ -29,6 +29,14 @@
         - [Scaller](#scaller)
         - [Instant Vector](#instant-vector)
         - [Range Vector](#range-vector)
+    - [Label Matcher](#label-matcher)
+    - [@ Modifier](#@modifier)
+    - [Operators](#operators)
+        - [Arithmetic Operators](#arithmetic-operators)
+        - [Comparison Operators](#Comparison-Operators)
+        - [Bool Operator](#bool-operator)
+        - [Logical Operators](#logical-operators)
+        - [Precedence of Operations](#precedence-of-operators)
 
 
 ## What is observability ##
@@ -419,7 +427,7 @@ When we "hit node_cpu_seconds_total" We receives the data against all CPUs and t
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
 
-## What is Promtol ##
+## What is Promtool ##
 
 Promtol is utility tool shipped with prometheus that can be used for:
 - Check and validate configuration
@@ -429,10 +437,10 @@ Promtol is utility tool shipped with prometheus that can be used for:
 
 command: promtool check config /etc/prometheus/prometheus.yml
 
-## What is promql ##
+## What is PromQL ##
 Its prometheus query language. Main way to query the metrics whitin prometheus from grafana or prometheus dashboard
 
-### Outline for promql ###
+### Outline for PromQL ###
 - Data types
 - Expressing data structure
 - Selectors and modifiers
@@ -542,8 +550,9 @@ We can get the data in past in multple ways
 
 ### Operators ###
 
+#### Arithmetic Operators ####
+
 ```
-Arithmetic operators
 +
 - 
 *
@@ -551,8 +560,9 @@ Arithmetic operators
 %
 ^
 node_filesystem_avail_bytes / 1024
-----------------------------------
-Comparison Operators
+```
+#### Comparison Operators ####
+```
 ==
 !==
 >
@@ -562,15 +572,22 @@ Comparison Operators
 
 e.g
 node_network_receive_bytes_total >=200
+```
+#### Bool Operator ####
 
-----------------------------------
 bool operators are used to return true(1) or false(0)
 e.g
-node_filesystem_avail_bytes > bool 2000000000
-bool operators are mostly used to generate alerts
+- node_filesystem_avail_bytes > bool 2000000000
+- bool operators are mostly used to generate alerts
+
+#### Logical Operators ####
+```
+AND
+OR
+UNLESS
 ```
 
-#### Binary operators ####
+#### Precedence of Operations ####
 When an promql expression has multiple binary operators they follow an order of precedence, from highest to lowest
 
 ```
@@ -586,9 +603,4 @@ For Example, 2 * 3 % 2 is equilent to (2 * 3) % 2.
 However ^ is right associateve, so 2 ^ 3 ^2 is equilent to 2^(3^2)
 ```
 
-#### Logical Operators ####
-```
-AND
-OR
-UNLESS
-```
+
