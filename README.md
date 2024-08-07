@@ -36,7 +36,7 @@
         - [Comparison Operators](#Comparison-Operators)
         - [Bool Operator](#bool-operator)
         - [Logical Operators](#logical-operators)
-        - [Precedence of Operations](#precedence-of-operators)
+        - [Precedence of Operations](#Precedence-of-Operations)
 
 
 ## What is observability ##
