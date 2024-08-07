@@ -37,6 +37,7 @@
         - [Bool Operator](#Bool-Operator)
         - [Logical Operators](#Logical-Operators)
         - [Precedence of Operations](#Precedence-of-Operations)
+9. [Vector Matching](#Vector-Matching)
 
 
 ## What is observability ##
@@ -587,6 +588,45 @@ OR
 UNLESS
 ```
 
+#### Aggregation Operators ####
+```
+sum() --> calculate sum over dimentions
+Min() --> Select minimum over dimentions
+Max() --> Select maximum over dimentions
+avg() --> Average over dimentions
+Group() --> All values in the resulting vector are 1
+Count() --> Count number of elements in the vector
+count_values() --> Count the number of elements with same value
+Bottomk() --> Smallest K element by sample value
+Topk --> Largest k element by sample value
+```
+Aggregate operators can be done as
+1. use `by` keyword and provide labels. Which means include these matching labels. e.g
+
+    SUM:
+    - sum all the number of requests
+        - sum (http_requests)
+    - Sum all the number of request by instances
+        - sum by (label_name) (metric_name)
+        - sum by (instance) (node_filesystem_files)
+    - Sum all the number of requests by instances and method
+        - sum by (instance) (node_cpu_seconds_total)
+
+            Above example will sum the values of cpu on the basis of instances. If we you have more than one instance, it will show you the value of each instance.
+        - sum by(instance, mode) (node_cpu_seconds_total)
+
+            Above example will sum the values of CPU on instances basis and modes as well. If you have one instance or more. But vCPUs are more than one. It will sum  and show you the all states value of each cpu per instance, for example, idle state of vCPU1 and vCPU2 of instance1, user state of vCPU1 and vCPU2 of instance2
+        Note: above examples will count the 
+2. use `without` keyword. It is opposite to `by` keyword. which means tell the labels which should not be included.
+
+    SUM:
+    - Sum all the number of request without path labels
+        - sum without (label_name) (metric_name)
+        - sum without (path) (node_filesystem_files)
+    - Sum all the number of requests without path and method labels
+        - sum without (path, method) (http_requests)
+
+
 #### Precedence of Operations ####
 When an promql expression has multiple binary operators they follow an order of precedence, from highest to lowest
 
@@ -602,5 +642,28 @@ Note: Operators on the same precedence level are left-associative.
 For Example, 2 * 3 % 2 is equilent to (2 * 3) % 2.
 However ^ is right associateve, so 2 ^ 3 ^2 is equilent to 2^(3^2)
 ```
+## Vector Matching ##
 
+Operations can be performed on differnet instant vectors
+
+- operations on one instant vector
+    - node_filesystem_avail_bytes < 1000
+- operations on 2 instant vectors
+    - node_filesystem_avail_bytes / node_filesystem_size_bytes * 100
+
+Rules for vector matching
+
+1. Labels should be same for for each instant vector
+    - node_filesystem_avail_bytes{instance="node1",job="node"} / node_filesystem_size_bytes{instance="node1",job="node"} * 100
+    - Note: In above example both, first metric_name (node_filesystem_avail_bytes) and second metric_name(node_fiesystem_size_bytes), have the same labels. That is why this operation will be performed
+2. If labels are not same for both metrics, operations would not be performed
+3. If both metric_name has same lables but one metric has an extra label, operations would not be performed
+4. If we have to performs operation with different labels we have to use `ignore(label_name)` keyword with label_name that has to be ignored
+    - http_errors{code="500"} / http_requests ( It will not work)
+    - http_errors{code="500"} / ignore(code) http_requests ( It will work)
+5. If we have to perform operations with different labels we can pass `on(label_name)` keyword with label_name that has to be matched
+    - http_errors{code="500"} / http_requests ( It will not work)
+    - http_errors{code="500"} / ignoring(code) http_requests ( It will work)
+    - http_errors{code="500"} / on(code) http_requests ( It will work)
+    - node_cpu_seconds_total{instance="node1", cpu="0"} + ignoring(cpu) node_cpu_seconds_total{instance="node1", cpu="1"} + ignoring(cpu)node_cpu_seconds_total{instance="node1", cpu="2"} ( It will work)
 
