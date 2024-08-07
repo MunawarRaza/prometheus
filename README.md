@@ -615,7 +615,7 @@ Aggregate operators can be done as
             Above example will sum the values of cpu on the basis of instances. If we you have more than one instance, it will show you the value of each instance.
         - sum by(instance, mode) (node_cpu_seconds_total)
 
-            Above example will sum the values of CPU on instances basis and modes as well. If you have one instance or more. But vCPUs are more than one. It will sum  and show you the all states value of each cpu per instance, for example, idle state of vCPU1 and vCPU2 of instance1, user state of vCPU1 and vCPU2 of instance2
+            Above example will sum the values of CPU on instances basis and modes as well. If you have one instance or more. But vCPUs are more than one. It will sum  and show you the all states value of each cpu per instance, for example, idle state of vCPU1 and vCPU2 of instance1, user state of vCPU1 and vCPU2 of instance1 and same for instance2
         Note: above examples will count the 
 2. use `without` keyword. It is opposite to `by` keyword. which means tell the labels which should not be included.
 
