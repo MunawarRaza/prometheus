@@ -14,6 +14,22 @@
 4. [What are exporetes?](#what-are-exporters)
 5. [What is node exporter](#what-is-node-exporter)
     - [How to install Node exporter](#how-to-install-node-exporeter)
+6. [What are Metrics](#what-are-metrics)
+    - [Attributes in Metrics](#attributes-in-metrics)
+    - [Different Metrics Types](#different-metics-types)
+        - [Counter Metrics](#counter-metrics)
+        - [Gauge Metrics](#gauge-metrics)
+        - [Histogram Metrics](#histogram-metrics)
+        - [Summary Metrics](#summary-metrics)
+7. [What is Promtool](#what-is-promtool)
+8. [What is PromQL](#what-is-PromQL)
+    - [Outline for PromQL](#outline-for-promQL)
+    - [Data Types](#data-types)
+        - [String](#string)
+        - [Scaller](#scaller)
+        - [Instant Vector](#instant-vector)
+        - [Range Vector](#range-vector)
+
 
 ## What is observability ##
 
@@ -48,7 +64,7 @@ Traces comprises of
         - duration
         - parent-id
 
-### Metrics ###
+### What are Metrics ###
 
 Metrics provide the information about the state of the system using numerical values
 It contains the information
@@ -318,7 +334,7 @@ curl http://localhost:9100/metrics
 ```
 
 
-## Metrics ##
+## What are Metrics ##
 
 ### Attributes in metrics ###
 Every metrics have TYPE and HELP attribute
@@ -341,7 +357,7 @@ There are four main types of metric
 - Histogram
 - Summary
 
-#### Counter Metric ####
+#### Counter Metrics ####
 
 - How many time did X happen
 
@@ -350,7 +366,7 @@ There are four main types of metric
 
 e.g total number of requests, total number of exception etc
 
-#### Gauge Metric ####
+#### Gauge Metrics ####
 
 - What is the current value of X. 
 
@@ -359,7 +375,7 @@ e.g total number of requests, total number of exception etc
 
 e.g Current CPU Utilization, Available System Memory, Number of concurrent Reuqests
 
-#### Histogram Metric ####
+#### Histogram Metrics ####
 
 - How Long or how big something is
 - Groups observations into configureable bucket sizes.
@@ -383,7 +399,7 @@ Following is the diagram for this
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/histogram_metrics_example.png)
 
-#### Summary Metric ####
+#### Summary Metrics ####
 
 - Similar to historgram (track how long or how big something is)
 - How many observations fell below X
