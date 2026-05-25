@@ -74,7 +74,7 @@ Traces comprises of
         - parent-id
 
 #### What are Metrics ####
-Metrics are numerical measurements in layperson terms.  The term time series refers to the recording of changes over time. What users want to measure differs from application to application. For a web server, it could be request times; for a database, it could be the number of active connections or active queries, and so on.
+Metrics are numerical measurements in layperson terms. The term time series refers to the recording of changes over time. What users want to measure differs from application to application. For a web server, it could be request times; for a database, it could be the number of active connections or active queries, and so on.
 
 Metrics provide the information about the state of the system using numerical values
 It contains the information
@@ -585,7 +585,60 @@ Following is the example
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/summary_metrics_example.png)
 
 ### What is timeseries ###
-When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+A time series is a unique combination of a metric name and its label set, which represents a single stream of values over time.
+
+A time series = metric name + labels (unique identifier) + values over time
+
+A stream of values over time for a given metric + label set.
+
+Example-1
+
+Single Time Series
+```
+node_cpu_seconds_total{cpu="0", instance="server1"}
+```
+At 10
+```
+node_cpu_seconds_total{cpu="0", instance="server1"} = 50
+```
+At 10:05
+```
+node_cpu_seconds_total{cpu="0", instance="server1"} = 60
+```
+So in above there is a single time series who has a stream(multiple) of values over multiple timestamps (10,10:05).
+
+Example-2
+
+Four different time series because there is difference in lable cpu
+```
+node_cpu_seconds_total{cpu="0", instance="server1"}
+node_cpu_seconds_total{cpu="1", instance="server1"}
+node_cpu_seconds_total{cpu="2", instance="server1"}
+node_cpu_seconds_total{cpu="3", instance="server1"}
+```
+
+For example we execute a query `node_cpu_seconds_total{mode="idle"}` at 10 and 10:05
+
+At 10
+| Metric | Value |
+|-----------------------------------------------------|-------------|
+| node_cpu_seconds_total{cpu="0", instance="server1"} | 50 |
+| node_cpu_seconds_total{cpu="1", instance="server1"} | 48 |
+| node_cpu_seconds_total{cpu="2", instance="server1"} | 52 |
+| node_cpu_seconds_total{cpu="3", instance="server1"} | 49 |
+
+So here are 4 different time series and each time series has one value at the same time(10:00). And this whole table is called instant vector at 10:00
+
+
+At 10:05
+| Metric | Value |
+|-----------------------------------------------------|-------------|
+| node_cpu_seconds_total{cpu="0", instance="server1"} | 60 |
+| node_cpu_seconds_total{cpu="1", instance="server1"} | 58 |
+| node_cpu_seconds_total{cpu="2", instance="server1"} | 62 |
+| node_cpu_seconds_total{cpu="3", instance="server1"} | 55 |
+
+So here are 4 different time series and each time series has one value at the same time(10:05). And this whole table is called instant vector at 10:05
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
 
@@ -625,7 +678,7 @@ Its prometheus query language. Main way to query the metrics whitin prometheus f
 - Range Vector --> Set of time series containing a range of data points over time for each time serie
 
 ##### Instant Vector #####
-Give me latest value
+Give me latest value of a time series at specific timestamp
 
 Example
 ```
@@ -640,7 +693,7 @@ server3 = 0
 ```
 Here single current value for each server
 
-current value of any metric. If we have multiple metrics and we got single value for each then it is called instant vector
+A set of multiple time series, each with one value at a specific timestamp
 
 There can be single time series with single timestamp or multiple time series at ONE timestamp
 
@@ -649,15 +702,9 @@ There can be single time series with single timestamp or multiple time series at
 
 Example
 
-If we got the value against each time series at same timestamp.
-
-When we hit "node_cpu_seconds_total" We receives the data against all CPUs and their states (idl,nice,user,system). The combination of 1 metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+Suppose we have 4 vCPUs and we hit `node_cpu_seconds_total{mode="idle"}` We receives the data against all CPUs and with their idle state. The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We got the result at single point in time. 
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
-
-In URDU:
-
-Hm query kerty hain k current cpu utilization ki value btao to ye ak value return ker dy ga. Hum keh sakty hain k hmen subha 10:50 minute jo cpu utilization thi wo btao to hm query man unix timestamp pass ker den gy. Hum kehty hain k 10:50 minute sy 10 minute pehly ki cpu utilization kia thi to is case man exact unix timestamp bhi pass ker sakty hain ya phr 10:50 minute ka Unix timestamp pass kren and offset 10m use ker len. Ye sari values jo return hon gi wo single value ho gi her query and timeseries ky against. Is liye ye instant vector ha
 
 ##### Range Vector #####
 Give me history over a time period
@@ -672,13 +719,13 @@ This means
 >Give all values from last 5 minutes.
 
 
-When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data which was scrapped  against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
+When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data which was scrapped against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
 e.g
 
 Following query means, get the total cpu seconds in last three minutes.
 node_cpu_seconds_total[3m]
 
-let's spouse Above query will return following data as shown in picture. We got tow metrics with unique labels therefor there are two timeseries. Since it is giving us different time for each value of each timeseries, this is called Range vector
+let's spouse Above query will return following data as shown in picture. We got two metrics with unique labels therefor there are two timeseries. Since it is giving us different time for each value of each timeseries, this is called Range vector
 
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/range_vector_data_type_example.png)
@@ -722,15 +769,13 @@ We can get the data in past in multple ways
     - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
 
         Note1: Above means first go to timestamp provide in unix form then go 5 minutes back before that time
-    
-        Note2: order dose not matter for offset and @ modifires. We can write in either ways.
 
     In following example both queries are equal
 
     - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
     - node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
 
-4. offset and @ modifires both can can be used with range vector
+4. offset and @ modifires both can be used with range vector
 
     Let's suppose we want to go at a specific time with unix timetamp then we go 10 minutes back. From there we want to get the values of different time range for 2 minutes. Like we can say get 2 minutes data range of 10 minutes before September 15, 2024 10:00:4 PM GMT
 
