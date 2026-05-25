@@ -128,7 +128,7 @@ It can monitor
 
 Note: Metrics are measured in numberical values. Like what are the pending requests. What is the latency, what is the cpu.
 
-### What promethus dose not monitor ?###
+### What promethus dose not monitor ?
 
 It dose not monitor
 - Logs
@@ -353,6 +353,53 @@ curl http://localhost:9100/metrics
 
 ## What are Metrics ##
 
+### Metric names and labels
+Every time series is uniquely identified by its metric name and optional key-value pairs called labels.
+
+#### Metric names:
+Metric names describe what is being measured
+- Example: http_requests_total → total HTTP requests
+
+Should follow naming pattern:
+- letters, numbers, underscore, colon
+- Regex: [a-zA-Z_:][a-zA-Z0-9_:]*
+
+Best practice:
+- Use clear, descriptive names
+- Example: db_query_duration_seconds, cpu_usage_total
+
+
+#### Metric Labels (Key-Value Pairs)
+Labels add extra detail to metrics
+- Example: method="POST", endpoint="/api/users"
+
+They help you filter and group data
+- Same metric can represent different conditions
+
+Changing any label value = new time series created
+
+#### Label Rules
+
+Label names:
+- Should follow: [a-zA-Z_][a-zA-Z0-9_]*
+- Can use UTF-8, but not recommended for compatibility
+
+Label values:
+- Can be any UTF-8 text
+- Empty value = treated as label does not exist
+
+Reserved:
+- Labels starting with __ (two underscores) are for internal Prometheus use only
+
+Example
+```
+<metric name>{<label name>="<label value>", ...}
+```
+For example, a time series with the metric name api_http_requests_total and the labels method="POST" and handler="/messages" could be written like this:
+```
+api_http_requests_total{method="POST", handler="/messages"}
+```
+
 ### Attributes in metrics ###
 Every metrics have TYPE and HELP attribute
 
@@ -375,44 +422,131 @@ There are four main types of metric
 - Summary
 
 #### Counter Metrics ####
-
-- How many time did X happen
-
-    e.g What are the total number of requests. This number is only increase not decrease.
+A counter is a cumulative metric that represents a single monotonically increasing counter whose value can only increase or be reset to zero on restart.
+- How many time did X happen  
+    - What are the total number of requests. This number is only increase not decrease.
 - Number only can increase
 
 e.g total number of requests, total number of exception etc
 
+>**Note:**  
+>Do not use a counter to expose a value that can decrease. For example, do not use a counter for the number of currently running processes; instead use a gauge.
+
+
+Example:
+
+It is used to count things like:
+
+- Total HTTP requests
+- Total errors
+- Total logins
+- Total processed messages
+
 #### Gauge Metrics ####
+A gauge is a metric that represents a single numerical value that can arbitrarily go up and down.
 
-- What is the current value of X. 
+Gauges are typically used for measured values like temperatures or current memory usage, but also "counts" that can go up and down, like the number of concurrent requests.
 
-    e.g What is the current value of CPU Utilization. This can be increase or decrease at any time
+- What is the current value of X.   
+    - What is the current value of CPU Utilization. This can be increase or decrease at any time
 - Number can go up or down
 
-e.g Current CPU Utilization, Available System Memory, Number of concurrent Reuqests
+Example:
+
+It is used to count things like:
+
+- Current CPU Utilization
+- Available System Memory
+- Number of concurrent Reuqests
 
 #### Histogram Metrics ####
+A histogram is used when you want to know:
 
+- How fast requests are
+- How large responses are
+- How many requests fall into different ranges
 - How Long or how big something is
 - Groups observations into configureable bucket sizes.
 
-e.g you want to know the states of anything in different time zone.
+Example
 
-You want to know
-- How many total number of requests in <0.5s
-- How many total number of requests in <1s
-- How many total number of requests in <5s
+```
+100ms
+200ms
+400ms
+900ms
+1500ms
+```
 
-so here <0.5s, <1s, <5s are the buckets.
+Prometheus groups them into buckets:
+| Bucket | Count |
+|------|-------------|
+| <=100ms | 1 |
+| <=500ms | 3 |
+| <=1000ms | 4 |
+| <=2000ms | 5 |
 
-Another example of size
+This is histogram. The second bucket includes the first bucket too.
 
-- How many reuqest of size <800Mb
-- How many reuqest of size <1000Mb
-- How many reuqest of size <1500Mb
+>**Histogram answers:**  
+>“How many values fall into each range?”
 
-Following is the diagram for this 
+>**Buckets:**  
+>“Buckets are ranges.”
+```
+0-100ms
+100-500ms
+500ms-1s
+1s-2s
+```
+##### MOST IMPORTANT PART
+Histogram creates 3 things
+
+Suppose metric name is:
+```
+http_request_duration_seconds
+```
+Prometheus automatically creates:
+
+1. Buckets
+```
+http_request_duration_seconds_bucket
+```
+Stores:
+>“How many requests were under X seconds”
+
+Example:
+```
+le="0.5"
+```
+means:
+```
+<= 0.5 seconds
+```
+2. Sum
+```
+http_request_duration_seconds_sum
+```
+Stores:
+>Total of all request durations
+
+Example:
+```
+10s + 20s + 30s = 60s
+```
+3. Count
+```
+http_request_duration_seconds_count
+```
+
+Stores:
+>Total number of requests
+
+Example:
+
+```
+3 requests
+```
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/histogram_metrics_example.png)
 
