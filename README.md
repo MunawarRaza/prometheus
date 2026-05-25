@@ -625,9 +625,33 @@ Its prometheus query language. Main way to query the metrics whitin prometheus f
 - Range Vector --> Set of time series containing a range of data points over time for each time serie
 
 ##### Instant Vector #####
+Give me latest value
+
+Example
+```
+promql
+up
+```
+Result
+```
+server1 = 1
+server2 = 1
+server3 = 0
+```
+Here single current value for each server
+
+current value of any metric. If we have multiple metrics and we got single value for each then it is called instant vector
+
+There can be single time series with single timestamp or multiple time series at ONE timestamp
+
+>** Most Important Prometheus rule:**  
+>Different labels = different time series
+
+Example
+
 If we got the value against each time series at same timestamp.
 
-When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
+When we hit "node_cpu_seconds_total" We receives the data against all CPUs and their states (idl,nice,user,system). The combination of 1 metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
 
@@ -636,6 +660,17 @@ In URDU:
 Hm query kerty hain k current cpu utilization ki value btao to ye ak value return ker dy ga. Hum keh sakty hain k hmen subha 10:50 minute jo cpu utilization thi wo btao to hm query man unix timestamp pass ker den gy. Hum kehty hain k 10:50 minute sy 10 minute pehly ki cpu utilization kia thi to is case man exact unix timestamp bhi pass ker sakty hain ya phr 10:50 minute ka Unix timestamp pass kren and offset 10m use ker len. Ye sari values jo return hon gi wo single value ho gi her query and timeseries ky against. Is liye ye instant vector ha
 
 ##### Range Vector #####
+Give me history over a time period
+
+Example:
+
+```
+promql
+up[5m]
+```
+This means
+>Give all values from last 5 minutes.
+
 
 When we want to get the data from a specific time like we query give me the data of last three minutes. It will return all the data which was scrapped  against each timeseries in last three minutes and for each result timestamp would be different. It could be scrapped 1 time, 10 times etc.
 e.g
