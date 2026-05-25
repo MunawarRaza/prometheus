@@ -407,11 +407,12 @@ Help Attribute: It is the description what the metric is
 
 Type Attribute: Specify what type of metric ( Counter, Gauge, Histogram, Summary)
 
-e.g
+Example
+```
+# HELP node_cpu_seconds_total Seconds the CPUs spent in each mode.
+# TYPE node_cpu_seconds_total counter
 
-Help node_disk_discard_time_seconds_total: This is the total number of seconds spent by the all discards
-Type node_disk_discard_time_seconds_total counter
-
+```
 ### Different Metics Types ###
 
 There are four main types of metric
@@ -642,6 +643,7 @@ So here are 4 different time series and each time series has one value at the sa
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
 
+---
 ## What is Promtool ##
 
 Promtol is utility tool shipped with prometheus that can be used for:
@@ -652,6 +654,7 @@ Promtol is utility tool shipped with prometheus that can be used for:
 
 command: promtool check config /etc/prometheus/prometheus.yml
 
+---
 ## What is PromQL ##
 Its prometheus query language. Main way to query the metrics whitin prometheus from grafana or prometheus dashboard
 
@@ -748,9 +751,32 @@ e.g hm kehty hain k subha 10:40 sy 10:50 ky dermian cpu utilization kia thi. to 
 
     node_filesystem_avail_bytes{cpu="0",device!~"/dev/sda.*"}
 
-### Modifire ###
-We can get the data in past in multple ways
+## Time series selectors
+These are the basic building-blocks that instruct PromQL what data to fetch.
 
+### Instant vector selectors
+Instant vector selectors allow the selection of a set of time series and a single sample value for each at a given timestamp (point in time).
+
+For example we execute a query `node_cpu_seconds_total{mode="idle"}`
+
+| Metric | Value |
+|-----------------------------------------------------|-------------|
+| node_cpu_seconds_total{cpu="0", instance="server1"} | 50 |
+| node_cpu_seconds_total{cpu="1", instance="server1"} | 48 |
+| node_cpu_seconds_total{cpu="2", instance="server1"} | 52 |
+| node_cpu_seconds_total{cpu="3", instance="server1"} | 49 |
+
+In above example we just query with a single metric name and it gives us the result of all time series which have data. With this query we got the data when we execute this query, but if we want to get the data at specific time in the past then we have to add Modifires like `@` or `offset`. We can also add `=,!=,=~,!~` in our query
+
+For example
+```
+http_requests_total{environment=~"staging|testing|development",method!="GET"}
+```
+
+### Range Vector Selectors
+To select the data for range vector we use `[]` at the end of a vector selector to specify for how many seconds/Minutes back in time values should be fetched for each resulting range vector element. 
+
+### Ofset modifier
 1. If we want to get the value of past in time. e.g get the cpu utilization 5hours ago, or 10days ago we use offset modifire before the time
 
     e.g
@@ -758,38 +784,27 @@ We can get the data in past in multple ways
     - node_memory_Active_bytes{instance="server1"} offset 5h
     - node_memory_Active_bytes{instance="server1"} offset 1h30m
 
-2. To go back to a specific point in time use the @ modifire
+### @ Modifier
+
+1. To go back to a specific point in time use the @ modifire
 
     - node_memory_Active_bytes{instance="server1"} @1663265188
 
         Note: here @1663265188 is the unix timestamp. We want to get the data at this unix timestamp
 
-3. Combine "offset" modifire and "@" modifire
-    
+### Combine Offset and @ modifire
+1. We can combine both modifier
     - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
 
-        Note1: Above means first go to timestamp provide in unix form then go 5 minutes back before that time
+        Explain: Above means first go to timestamp provide in unix format and then go 5 minutes back before that time. Order of modifires dose not matter.
 
-    In following example both queries are equal
-
-    - node_memory_Active_bytes{instance="server1"} @1663265188 offset 5m
-    - node_memory_Active_bytes{instance="server1"} offset 5m @1663265188
-
-4. offset and @ modifires both can be used with range vector
-
-    Let's suppose we want to go at a specific time with unix timetamp then we go 10 minutes back. From there we want to get the values of different time range for 2 minutes. Like we can say get 2 minutes data range of 10 minutes before September 15, 2024 10:00:4 PM GMT
-
+2. offset and @ modifires both can be used with range vector
 
     - node_memory_Active_bytes{instance="server1"}[2m] @1663265188 offset 10m
 
-    node_cpu_seconds_total{cpu="0",mode="user"}[2m] @1722970584.93 offset 2m
-    go to 1722970584.93 then go back 2 minutes and then give me the range of last 2 minutes
-
-    let's break it
-
-    If we convert @1722970584.93 into humen readable time it gives us `Tue Aug  6 11:56:24 PM PKT 2024`. Now due to `offset` modifire it will go to `Aug  6 11:54:24 PM PKT 2024` and due to range --> `[2m]` will return last 3 results before `11:54:24 PM` which are value at `11:54:24 PM, 11:53:24 PM, 11:52:24 P`. There is a difference of 1 minute in each timestamp becacuse i have configured prometheus to collect the data after 1 minute whcih is "scrape_interval: 60s"
-
-
+    Explain: go to 1663265188 then go back 10 minutes and then give me the range of last 2 minutes
+### Modifiers With functions
+The `@` modifier always needs to follow the selector immediately, i.e. the following would be correct:
 ### Operators ###
 
 #### Arithmetic Operators ####
