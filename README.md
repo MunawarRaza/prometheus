@@ -42,14 +42,14 @@
 
 ## What is observability ##
 
-## Pillers of Observability ##
+### Pillers of Observability ###
 There are three main pillers to observe the things
 
 1. Logging
 2. Traces
 3. Metrics
 
-### Logging ###
+#### Logging ####
 
 These are the record of event that have occurred.
 
@@ -57,7 +57,7 @@ Logs are comprised of
 - Timestamp: When event occured
 - Meesage: Information about the event
 
-### Traces ###
+#### Traces ####
 
 Allow you to follow the operations as they traverses through various systems and services. Like, trace how a request reached to destination and back from that. So we can follow an individual request and see it flow thorugh our system hop by hop
 
@@ -73,7 +73,8 @@ Traces comprises of
         - duration
         - parent-id
 
-### What are Metrics ###
+#### What are Metrics ####
+Metrics are numerical measurements in layperson terms.  The term time series refers to the recording of changes over time. What users want to measure differs from application to application. For a web server, it could be request times; for a database, it could be the number of active connections or active queries, and so on.
 
 Metrics provide the information about the state of the system using numerical values
 It contains the information
@@ -93,9 +94,11 @@ e.g
 metric_name{dimentions} value timestamp
 node_filesystem_avail_bytes{fstype="vfat",mountpoint="/home/"} 5000 4:30PM 12/1/2024
 
+---
+
 ## What is prometheus ##
 
-Prometheus is a monitoring solution that is responsible for collecting and aggregating metrics
+Prometheus is a monitoring solution that is responsible for collecting and aggregating metrics. Prometheus collects and stores its metrics as time series data, i.e. metrics information is stored with the timestamp at which it was recorded, alongside optional key-value pairs called labels.
 
 ### What prometheus can do ? ###
 
@@ -134,9 +137,9 @@ It dose not monitor
 
 ### Architecture of Prometheus ###
 
-1. Main Component
+1. Main Component (prometheus server)
 
-    Three parts of prometheus' main component
+    Three parts of prometheus server main component
     1. Data Retrival worker
 
         This worker is responsible to scrap the metric data from the target. It pulls the metrics from the exporter which are running on target server
@@ -173,6 +176,9 @@ Following is the architectural diagram
 
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/architecture_diagram.png)
 
+
+Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. It stores all scraped samples locally and runs rules over this data to either aggregate and save new time series from existing data or generate alerts. Grafana  or other API consumers can be used to visualize the collected data.
+
 ### Pull base vs Push Base Model ###
 
 Pull Base:
@@ -191,6 +197,8 @@ In push base model, agent on target machines blindly sends the data to preconfig
 - Graphite
 
 In Push Base, we don't know our main components where agent sends the data is live or not
+
+---
 
 ### How to Install Prometheus ###
 
