@@ -174,7 +174,7 @@ It dose not monitor
 
 Following is the architectural diagram
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/architecture_diagram.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/architecture_diagram.png)
 
 
 Prometheus scrapes metrics from instrumented jobs, either directly or via an intermediary push gateway for short-lived jobs. It stores all scraped samples locally and runs rules over this data to either aggregate and save new time series from existing data or generate alerts. Grafana  or other API consumers can be used to visualize the collected data.
@@ -414,7 +414,7 @@ Another example of size
 
 Following is the diagram for this 
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/histogram_metrics_example.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/histogram_metrics_example.png)
 
 #### Summary Metrics ####
 
@@ -429,12 +429,12 @@ e.g
 
 Following is the example
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/summary_metrics_example.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/summary_metrics_example.png)
 
 ### What is timeseries ###
 When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
 
 ## What is Promtool ##
 
@@ -476,7 +476,7 @@ If we got the value against each time series at same timestamp.
 
 When we "hit node_cpu_seconds_total" We receives the data against all CPUs and therir states (idl,nice,user,system). The combination of metric_name and unique label returned in the response of above query is called 1 time series. Since we got four results then there are four timeseries. We can see the timestamp which is same for each result. We got the result at single point in time. 
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/instant_vector_data_type_example.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/instant_vector_data_type_example.png)
 
 In URDU:
 
@@ -493,7 +493,7 @@ node_cpu_seconds_total[3m]
 let's spouse Above query will return following data as shown in picture. We got tow metrics with unique labels therefor there are two timeseries. Since it is giving us different time for each value of each timeseries, this is called Range vector
 
 
-![alt text](https://github.com/MunawarRaza/prometheus/blob/master/assests/range_vector_data_type_example.png)
+![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/range_vector_data_type_example.png)
 
 In URDU:
 Hum range define kerty hain k last 5 minutes ka data hmen provide kren. Is case man prometheus ny 5 minute man ho sakta ha 5 dafa data collect kia hoa kisi bhi timeserise k liye. Is liye jb hmen data return ho ga to timeseries same ho gi but timestamp different ho ga r values bhi different ho sakti hain. 
