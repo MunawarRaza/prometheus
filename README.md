@@ -548,6 +548,25 @@ Example:
 3 requests
 ```
 
+##### What is histogram_quantile()?
+This is used to calculate percentiles.
+
+Example:
+
+- p95 latency
+- p99 latency
+
+Real Meaning
+
+Example:
+
+```
+95% of requests finished under 500ms
+```
+This is:
+
+P95 latency
+
 ![alt text](https://github.com/MunawarRaza/prometheus/blob/main/assests/histogram_metrics_example.png)
 
 #### Summary Metrics ####
